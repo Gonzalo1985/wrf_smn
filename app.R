@@ -364,7 +364,8 @@ server <- function(input, output, session) {
   })
   
   data.leaf <- eventReactive(input$Calcular_ith, {
-    data <- load.netcdf.terra(nc.filenames = file.for.points()[2], variable = "Tmax")
+    ffp <- file.for.points()
+    data <- load.netcdf.terra(nc.filenames = ffp[2], variable = "T2")
     
   })
   

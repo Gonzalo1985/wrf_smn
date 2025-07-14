@@ -51,24 +51,24 @@ ui <- dashboardPage(skin = "green",
       
       waiter::use_waiter(),
       
-      conditionalPanel(condition = "input.tabs1==1",
+      conditionalPanel(condition = "input.tabs1==2",
                        
                        tags$div(
                          style = "display: inline-block; background-color: #BBBBBB; padding: 5px;",
                          tags$img(src = "logoSMN-75x80.png", width = "75px")),
                          tags$span(style = "color: #000046; font-size: 18px; font-weight: bold;","Servicio Meteorológico Nacional"),
                        
-                       dateInput("fecha", label = div(style = "color: black;", "Seleccione una fecha de pronóstico"),
-                                 value = Sys.Date() - 2,
-                                 min = "2025-07-01",
-                                 max = Sys.Date() - 2),
+                       dateInput("fecha.tab1", label = div(style = "color: black;", "Seleccione una fecha de pronóstico"),
+                                 value = as.Date("2025-01-15"),
+                                 min = as.Date("2025-01-01"),
+                                 max = as.Date("2025-01-15")),
                        
-                       selectInput("ciclo",
+                       selectInput("ciclo.tab1",
                                    label = div(style = "color: black;", "Selección del ciclo de pronóstico"),
                                    choices = c("00", "06", "12", "18"),
                                    selected = "00"),
                        
-                       selectInput("time",
+                       selectInput("time.tab1",
                                    label = div(style = "color: black;", "Selección del dataset (plazo de pronóstico)"),
                                    choices = c("24H", "01H"),
                                    selected = "24H"),
@@ -82,16 +82,28 @@ ui <- dashboardPage(skin = "green",
                        
                        tags$br(),
                        
-                       uiOutput("variable"), 
+                       tags$br(),
+                       
+                       tags$br(),
+                       
+                       tags$div(
+                         style = "display: flex; justify-content: center; align-items: center; height: 100%",
+                         actionButton("Calcular_ith", "Calcular ITH-WRF-DET",
+                                      style = "background-color: #3F704D",
+                                      class = "btn-lg btn-success")),
+                       
+                       tags$br()),
+                       
+                       #uiOutput("variable")),
                       
-                       textInput("lon", label = div(style = "color: black;", "Selección de longitud")),
+                       #textInput("lon", label = div(style = "color: black;", "Selección de longitud")),
                        
-                       textInput("lat", label = div(style = "color: black;", "Selección de latitud")),
+                       #textInput("lat", label = div(style = "color: black;", "Selección de latitud")),
                        
-                       actionButton("inicio", "Grafica Información Puntual",
-                                    style = "background-color: #3F704D",
-                                    class = "btn-lg btn-success",
-                                    icon = icon("play"))),
+                       #actionButton("inicio", "Grafica Información Puntual",
+                      #              style = "background-color: #3F704D",
+                      #              class = "btn-lg btn-success",
+                      #              icon = icon("play"))),
       
 
       conditionalPanel(condition = "input.tabs1==2",
@@ -172,11 +184,11 @@ server <- function(input, output, session) {
   # UI según selección de dataset
   output$variable <- renderUI({
     
-    if (input$time == "01H")
+    if (input$time.tab1 == "01H")
     {opts <- c("PP", "HR2", "T2", "dirViento10", "magViento10", "PSFC",
                "TSLB", "SMOIS")}
     
-    if (input$time == "24H")
+    if (input$time.tab1 == "24H")
     {opts <- c("Tmax", "Tmin")}
     
     selectInput("variable",
@@ -188,57 +200,50 @@ server <- function(input, output, session) {
     
     sidebarMenu(
       
-      tags$div(
-        style = "display: inline-block; background-color: #BBBBBB; padding: 5px;",
-        tags$img(src = "logoSMN-75x80.png", width = "75px")),
-        tags$span(style = "color: #000046; font-size: 18px; font-weight: bold;","Servicio Meteorológico Nacional"),
+      #tags$div(
+      #  style = "display: inline-block; background-color: #BBBBBB; padding: 5px;",
+      #  tags$img(src = "logoSMN-75x80.png", width = "75px")),
+      #  tags$span(style = "color: #000046; font-size: 18px; font-weight: bold;","Servicio Meteorológico Nacional"),
       
-      tags$br(),
+      #dateInput("fecha", label = div(style = "color: black;", "Seleccione una fecha de pronóstico"),
+      #          value = as.Date("2025-01-15"),
+      #          min = as.Date("2025-01-01"),
+      #          max = as.Date("2025-01-15")),
       
-      dateInput("fecha", label = div(style = "color: black;", "Seleccione una fecha de pronóstico"),
-                value = Sys.Date() - 1,
-                min = "2022-01-01",
-                max = Sys.Date()),
+      #selectInput("ciclo",
+      #            label = div(style = "color: black;", "Selección del ciclo de pronóstico"),
+      #            choices = c("00", "06", "12", "18"),
+      #            selected = "00"),
       
-      selectInput("ciclo",
-                  label = div(style = "color: black;", "Selección del ciclo de pronóstico"),
-                  choices = c("00", "06", "12", "18"),
-                  selected = "00"),
+      #selectInput("time",
+      #            label = div(style = "color: black;", "Selección del dataset (plazo de pronóstico)"),
+      #            choices = c("24H", "01H"),
+      #            selected = "24H"),
       
-      selectInput("time",
-                  label = div(style = "color: black;", "Selección del dataset (plazo de pronóstico)"),
-                  choices = c("24H", "01H"),
-                  selected = "24H"),
+      #actionButton("descarga", "DESCARGA DE DATOS",
+      #             style = "background-color: #3F704D",
+      #             class = "btn-lg btn-success",
+      #             icon = icon("download")),
       
-      actionButton("descarga", "DESCARGA DE DATOS",
-                   style = "background-color: #3F704D",
-                   class = "btn-lg btn-success",
-                   icon = icon("download")),
-      
-      tags$br(),
-      
-      tags$div(
-        style = "display: flex; justify-content: center; align-items: center; height: 100%",
-        actionButton("Calcular_ith", "Calcular ITH-WRF-DET",
-                     style = "background-color: #3F704D",
-                     class = "btn-lg btn-success")),
+      #tags$div(
+      #  style = "display: flex; justify-content: center; align-items: center; height: 100%",
+      #  actionButton("Calcular_ith", "Calcular ITH-WRF-DET",
+      #               style = "background-color: #3F704D",
+      #               class = "btn-lg btn-success")),
       
       tags$br(),
       
       selectInput("time_ith", label = div(style = "color: black;", "Selección de hora de pronóstico WRF-ITH"),
                   choices = paste0("(", sprintf("%02d", seq(1, 72, 1)), ")", " ",
-                                   seq(strptime(as.character(paste0(input$fecha, "T", input$ciclo)),
+                                   seq(strptime(as.character(paste0(input$fecha.tab1, "T", input$ciclo.tab1)),
                                                 format = "%Y-%m-%dT%H"),
                                        by = "hour",
                                        length.out = 72))),
       
-      #actionButton("ith_map", "Grafica Mapa ITH-WRF-DET", class = "btn-sm btn-info"),
-      
       selectInput("estaciones", div(style = "color: black;", "Elija estación"),
                   choices = c("Custom", "Sunchales", "Reconquista", "Ceres")),
     
-      actionButton("ith_srs", "Grafica Serie ITH-WRF-DET", class = "btn-sm btn-success")
-    )
+      actionButton("ith_srs", "Grafica Serie ITH-WRF-DET", class = "btn-sm btn-success"))
     
   })
   
@@ -265,11 +270,11 @@ server <- function(input, output, session) {
     
     showNotification("La descarga de archivos se encuentra en proceso", duration = 7)
        
-    s <- get.wrf.files(anual = format(input$fecha, "%Y"),
-                  mes =format(input$fecha, "%m"),
-                  dia = format(input$fecha, "%d"),
-                  ciclo = input$ciclo,
-                  time = input$time)
+    s <- get.wrf.files(anual = format(input$fecha.tab1, "%Y"),
+                  mes =format(input$fecha.tab1, "%m"),
+                  dia = format(input$fecha.tab1, "%d"),
+                  ciclo = input$ciclo.tab1,
+                  time = input$time.tab1)
        
     showNotification("¡Listo!", duration = NULL)
     
@@ -286,9 +291,9 @@ server <- function(input, output, session) {
     folder.data <- "./"
     
     var.netcdf <- load.netcdf(nc.filenames = Sys.glob(paste0(folder.data, "*",
-                                                             format(input$fecha, "%Y"),
-                                                             format(input$fecha, "%m"),
-                                                             format(input$fecha, "%d"), "_*")),
+                                                             format(input$fecha.tab1, "%Y"),
+                                                             format(input$fecha.tab1, "%m"),
+                                                             format(input$fecha.tab1, "%d"), "_*")),
                               variable = var.1())
     
     
@@ -314,9 +319,9 @@ server <- function(input, output, session) {
     folder.data <- "./"
     
     ith.calc <- ith.wrf.det(path.data = folder.data,
-                            anual = format(input$fecha, "%Y"),
-                            mes = format(input$fecha, "%m"),
-                            dia = format(input$fecha, "%d"),
+                            anual = format(input$fecha.tab1, "%Y"),
+                            mes = format(input$fecha.tab1, "%m"),
+                            dia = format(input$fecha.tab1, "%d"),
                             ciclo = input$ciclo)
   })
   

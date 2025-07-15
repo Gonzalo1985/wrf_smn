@@ -51,49 +51,47 @@ ui <- dashboardPage(skin = "green",
       
       waiter::use_waiter(),
       
-      conditionalPanel(condition = "input.tabs1==2",
+      
+      tags$div(
+        style = "display: inline-block; background-color: #BBBBBB; padding: 5px;",
+        tags$img(src = "logoSMN-75x80.png", width = "75px")),
+      
+      tags$span(style = "color: #000046; font-size: 18px; font-weight: bold;",
+                "Servicio Meteorológico Nacional"),
+      
+      dateInput("fecha.tab1", label = div(style = "color: black;",
+                                          "Seleccione una fecha de pronóstico"),
+                value = as.Date("2025-01-15"),
+                min = as.Date("2025-01-01"),
+                max = as.Date("2025-01-15")),
+      
+      selectInput("ciclo.tab1",
+                  label = div(style = "color: black;", "Selección del ciclo de pronóstico"),
+                  choices = c("00", "06", "12", "18"),
+                  selected = "00"),
                        
-                       tags$div(
-                         style = "display: inline-block; background-color: #BBBBBB; padding: 5px;",
-                         tags$img(src = "logoSMN-75x80.png", width = "75px")),
-                         tags$span(style = "color: #000046; font-size: 18px; font-weight: bold;","Servicio Meteorológico Nacional"),
-                       
-                       dateInput("fecha.tab1", label = div(style = "color: black;", "Seleccione una fecha de pronóstico"),
-                                 value = as.Date("2025-01-15"),
-                                 min = as.Date("2025-01-01"),
-                                 max = as.Date("2025-01-15")),
-                       
-                       selectInput("ciclo.tab1",
-                                   label = div(style = "color: black;", "Selección del ciclo de pronóstico"),
-                                   choices = c("00", "06", "12", "18"),
-                                   selected = "00"),
-                       
-                       selectInput("time.tab1",
-                                   label = div(style = "color: black;", "Selección del dataset (plazo de pronóstico)"),
-                                   choices = c("24H", "01H"),
-                                   selected = "24H"),
-                       
-                       actionButton("descarga", "DESCARGA DE DATOS",
-                                    style = "background-color: #3F704D",
-                                    class = "btn-lg btn-success",
-                                    icon = icon("download")),
-                       
-                       tags$br(),
-                       
-                       tags$br(),
-                       
-                       tags$br(),
-                       
-                       tags$br(),
-                       
-                       tags$div(
-                         style = "display: flex; justify-content: center; align-items: center; height: 100%",
-                         actionButton("Calcular_ith", "Calcular ITH-WRF-DET",
-                                      style = "background-color: #3F704D",
-                                      class = "btn-lg btn-success")),
-                       
-                       tags$br()),
-                       
+      selectInput("time.tab1",
+                  label = div(style = "color: black;", "Selección del dataset (plazo de pronóstico)"),
+                  choices = c("24H", "01H"),
+                  selected = "24H"),
+      
+      actionButton("descarga", "DESCARGA DE DATOS",
+                   style = "background-color: #3F704D",
+                   class = "btn-lg btn-success",
+                   icon = icon("download")),
+      
+      tags$br(), tags$br(), tags$br(), tags$br(),
+      
+      tags$div(
+        style = "display: flex; justify-content: center; align-items: center; height: 100%",
+        actionButton("Calcular_ith", "Calcular ITH-WRF-DET",
+                     style = "background-color: #3F704D",
+                     class = "btn-lg btn-success")),
+      
+      tags$br(),
+      
+      uiOutput("tabSelection")
+    
                        #uiOutput("variable")),
                       
                        #textInput("lon", label = div(style = "color: black;", "Selección de longitud")),
@@ -105,10 +103,7 @@ ui <- dashboardPage(skin = "green",
                       #              class = "btn-lg btn-success",
                       #              icon = icon("play"))),
       
-
-      conditionalPanel(condition = "input.tabs1==2",
-                       
-                       uiOutput("tabSelection"))
+      
 
       ), width = 350
   ),
@@ -251,15 +246,15 @@ server <- function(input, output, session) {
   
   
   # definición de variables de funciones
-  var.1 <- eventReactive(input$inicio, {
-    input$variable
-   })
-  var.2 <- eventReactive(input$inicio, {
-    as.numeric(input$lon)
-  })
-  var.3 <- eventReactive(input$inicio, {
-    as.numeric(input$lat)
-  })
+  #var.1 <- eventReactive(input$inicio, {
+   # input$variable
+   #})
+  #var.2 <- eventReactive(input$inicio, {
+  #  as.numeric(input$lon)
+  #})
+  #var.3 <- eventReactive(input$inicio, {
+  #  as.numeric(input$lat)
+  #})
   
   
   file.for.points <- reactiveVal(NULL)
@@ -283,46 +278,54 @@ server <- function(input, output, session) {
   
   
   
-  resp0 <- eventReactive(input$inicio, {
+  #resp0 <- eventReactive(input$inicio, {
     
     # waiter en pantalla
-    waiter::Waiter$new(html = spin_square_circle(), id = "plot_output")$show()
+  #  waiter::Waiter$new(html = spin_square_circle(), id = "plot_output")$show()
     
-    folder.data <- "./"
+  #  folder.data <- "./"
     
-    var.netcdf <- load.netcdf(nc.filenames = Sys.glob(paste0(folder.data, "*",
-                                                             format(input$fecha.tab1, "%Y"),
-                                                             format(input$fecha.tab1, "%m"),
-                                                             format(input$fecha.tab1, "%d"), "_*")),
-                              variable = var.1())
+  #  var.netcdf <- load.netcdf(nc.filenames = Sys.glob(paste0(folder.data, "*",
+  #                                                           format(input$fecha.tab1, "%Y"),
+  #                                                           format(input$fecha.tab1, "%m"),
+  #                                                           format(input$fecha.tab1, "%d"), "_*")),
+  #                            variable = var.1())
     
     
-    var.netcdf
-  })
+  #  var.netcdf
+  #})
   
   
-  resp.1 <- eventReactive(input$inicio, {
-    np.netcdf <- find.nearest.point(data.matrix = resp0()[[1]],
-                                    data.lon = resp0()[[2]],
-                                    data.lat = resp0()[[3]],
-                                    lon = var.2(),
-                                    lat = var.3())
-    np.netcdf
-  })
+  #resp.1 <- eventReactive(input$inicio, {
+  #  np.netcdf <- find.nearest.point(data.matrix = resp0()[[1]],
+  #                                  data.lon = resp0()[[2]],
+  #                                  data.lat = resp0()[[3]],
+  #                                  lon = var.2(),
+  #                                  lat = var.3())
+  #  np.netcdf
+  #})
   
   
   resp.2 <- eventReactive(input$Calcular_ith, {
     
-    # waiter en pantalla
-    waiter::Waiter$new(html = spin_square_circle(), id = "image_ith")$show()
+    tryCatch({
+      # waiter en pantalla
+      waiter::Waiter$new(html = spin_square_circle(), id = "image_ith")$show()
     
-    folder.data <- "./"
+      folder.data <- "./"
     
-    ith.calc <- ith.wrf.det(path.data = folder.data,
-                            anual = format(input$fecha.tab1, "%Y"),
-                            mes = format(input$fecha.tab1, "%m"),
-                            dia = format(input$fecha.tab1, "%d"),
-                            ciclo = input$ciclo)
+      ith.calc <- ith.wrf.det(path.data = folder.data,
+                              anual = format(input$fecha.tab1, "%Y"),
+                              mes = format(input$fecha.tab1, "%m"),
+                              dia = format(input$fecha.tab1, "%d"),
+                              ciclo = input$ciclo.tab1)
+      
+      
+    }, error = function(e) {
+      showNotification(paste("Error:", e$message), type = "error", duration = NULL)
+      print(e)
+      return(NULL)
+    })
   })
   
   
@@ -352,31 +355,25 @@ server <- function(input, output, session) {
   # OUTPUT TIME SERIES ITH: NEW PRODUCT
   source(file = "./02c_timeseries_ith_new_tab2.R", local = TRUE)
   
-  # Capturar clic en el mapa
-#  observeEvent(input$leaflet_ith_click, {
-#    click <- input$leaflet_ith_click
-#    latlon <- c(lat = click$lat, lon = click$lng)
-#    cds(latlon)  # guardar en variable reactiva
-#  })
+  # Capturar click en el mapa
+  #cds <- reactiveVal(NULL)
   
-  cds <- reactiveVal(NULL)
+  #click <- eventReactive(input$leaflet_ith_click, {
+  #  click <- input$leaflet_ith_click
+  #  latlon <- c(lat = click$lat, lon = click$lng)
+  #  cds(latlon)
+  #  latlon
+  #})
   
-  click <- eventReactive(input$leaflet_ith_click, {
-    click <- input$leaflet_ith_click
-    latlon <- c(lat = click$lat, lon = click$lng)
-    #cds(latlon)
-    latlon
-  })
+  #data.leaf <- eventReactive(input$Calcular_ith, {
+  #  ffp <- file.for.points()
+  #  data <- load.netcdf.terra(nc.filenames = ffp[2], variable = "T2")
+  #  
+  #})
   
-  data.leaf <- eventReactive(input$Calcular_ith, {
-    ffp <- file.for.points()
-    data <- load.netcdf.terra(nc.filenames = ffp[2], variable = "T2")
-    
-  })
-  
-  output$leaflet_ith <- renderLeaflet({
-    draw.map(x = data.leaf()[[4]]$x, y = data.leaf()[[4]]$y)
-  })
+  #output$leaflet_ith <- renderLeaflet({
+  #  draw.map(x = data.leaf()[[4]]$x, y = data.leaf()[[4]]$y)
+  #})
   
   # ----------------------------------------------------------------------------
   

@@ -59,18 +59,18 @@ ui <- dashboardPage(skin = "green",
       tags$span(style = "color: #000046; font-size: 18px; font-weight: bold;",
                 "Servicio Meteorológico Nacional"),
       
-      dateInput("fecha.tab1", label = div(style = "color: black;",
+      dateInput("fecha", label = div(style = "color: black;",
                                           "Seleccione una fecha de pronóstico"),
                 value = as.Date("2025-01-15"),
                 min = as.Date("2025-01-01"),
                 max = as.Date("2025-01-15")),
       
-      selectInput("ciclo.tab1",
+      selectInput("ciclo",
                   label = div(style = "color: black;", "Selección del ciclo de pronóstico"),
                   choices = c("00", "06", "12", "18"),
                   selected = "00"),
                        
-      selectInput("time.tab1",
+      selectInput("time",
                   label = div(style = "color: black;", "Selección del dataset (plazo de pronóstico)"),
                   choices = c("24H", "01H"),
                   selected = "24H"),
@@ -109,7 +109,7 @@ ui <- dashboardPage(skin = "green",
   ),
   
   dashboardBody(fluidPage(
-    tabsetPanel(id="tabs1",
+    tabsetPanel(id = "tabs1",
       #tabPanel("Información puntual", value = 1,
       #         box(title = "La evolución temporal de pronóstico de la variable es:",
       #             collapsible = TRUE, width = 6,
@@ -122,9 +122,9 @@ ui <- dashboardPage(skin = "green",
       #             collapsible = TRUE, width = 10,
       #             dataTableOutput("var_output"))
       #         ),
-      tabPanel("Productos ITH WRF-DET", value = 2,
+      tabPanel("Productos ITH WRF-DET",
                fluidRow(
-                 column(width=3, tags$a(
+                 column(width = 3, tags$a(
                  href = "https://repositorio.smn.gob.ar/bitstream/handle/20.500.12160/2875/Nota_Tecnica_SMN_2024-182.pdf?sequence=1&isAllowed=y",
                  target = "_blank",
                  infoBox("Documentación", "Haga click aquí", icon = icon("book"), width = "100%"))),
@@ -144,22 +144,22 @@ ui <- dashboardPage(skin = "green",
                    collapsible = TRUE, width = 6,
                    leafletOutput("leaflet_ith", height = "1000px"))
                ),
-      tabPanel("Productos ITH WRF-ENS (desactualizado)", value = 2,
-               fluidRow(
-                 column(width=3, tags$a(
-                 href = "https://repositorio.smn.gob.ar/bitstream/handle/20.500.12160/2875/Nota_Tecnica_SMN_2024-182.pdf?sequence=1&isAllowed=y",
-                 target = "_blank",
-                 infoBox("Documentación", "Haga click aquí", icon = icon("book"), width = "100%"))),
+      #tabPanel("Productos ITH WRF-ENS (desactualizado)", value = 2,
+      #         fluidRow(
+      #           column(width=3, tags$a(
+      #           href = "https://repositorio.smn.gob.ar/bitstream/handle/20.500.12160/2875/Nota_Tecnica_SMN_2024-182.pdf?sequence=1&isAllowed=y",
+      #           target = "_blank",
+      #           infoBox("Documentación", "Haga click aquí", icon = icon("book"), width = "100%"))),
               
-                 column(width=3, infoBox("", "Consultas", "gdiaz@smn.gob.ar", width = "100%", icon = icon("question")))),
+      #           column(width=3, infoBox("", "Consultas", "gdiaz@smn.gob.ar", width = "100%", icon = icon("question")))),
                
-               box(title = "Mapas de probabilidad de ITH WRF-ENS",
-                   collapsible = TRUE, width = 10, height = 500,
-                   imageOutput("image_ith_ens")),
-               box(title = "Series Temporales de ITH WRF-ENS",
-                   collapsible = TRUE, width = 6, height = 800,
-                   imageOutput("plot_ith_ens"))
-      )
+      #         box(title = "Mapas de probabilidad de ITH WRF-ENS",
+      #             collapsible = TRUE, width = 10, height = 500,
+      #             imageOutput("image_ith_ens")),
+      #         box(title = "Series Temporales de ITH WRF-ENS",
+      #             collapsible = TRUE, width = 6, height = 800,
+      #             imageOutput("plot_ith_ens"))
+      #)
       )
     )
     )
@@ -230,7 +230,7 @@ server <- function(input, output, session) {
       
       selectInput("time_ith", label = div(style = "color: black;", "Selección de hora de pronóstico WRF-ITH"),
                   choices = paste0("(", sprintf("%02d", seq(1, 72, 1)), ")", " ",
-                                   seq(strptime(as.character(paste0(input$fecha.tab1, "T", input$ciclo.tab1)),
+                                   seq(strptime(as.character(paste0(input$fecha, "T", input$ciclo)),
                                                 format = "%Y-%m-%dT%H"),
                                        by = "hour",
                                        length.out = 72))),
@@ -265,11 +265,11 @@ server <- function(input, output, session) {
     
     showNotification("La descarga de archivos se encuentra en proceso", duration = 7)
        
-    s <- get.wrf.files(anual = format(input$fecha.tab1, "%Y"),
-                  mes =format(input$fecha.tab1, "%m"),
-                  dia = format(input$fecha.tab1, "%d"),
-                  ciclo = input$ciclo.tab1,
-                  time = input$time.tab1)
+    s <- get.wrf.files(anual = format(input$fecha, "%Y"),
+                  mes =format(input$fecha, "%m"),
+                  dia = format(input$fecha, "%d"),
+                  ciclo = input$ciclo,
+                  time = input$time)
        
     showNotification("¡Listo!", duration = NULL)
     
@@ -315,10 +315,10 @@ server <- function(input, output, session) {
       folder.data <- "./"
     
       ith.calc <- ith.wrf.det(path.data = folder.data,
-                              anual = format(input$fecha.tab1, "%Y"),
-                              mes = format(input$fecha.tab1, "%m"),
-                              dia = format(input$fecha.tab1, "%d"),
-                              ciclo = input$ciclo.tab1)
+                              anual = format(input$fecha, "%Y"),
+                              mes = format(input$fecha, "%m"),
+                              dia = format(input$fecha, "%d"),
+                              ciclo = input$ciclo)
       
       
     }, error = function(e) {
@@ -335,13 +335,13 @@ server <- function(input, output, session) {
   
   # OUTPUT TAB 1
   # OUTPUT PLOT METEOROLOGICAL VARIABLE
-  source(file = "./01a_plot_tab1.R", local = TRUE)
+  #source(file = "./01a_plot_tab1.R", local = TRUE)
   
   # OUTPUT LEAFLET LOCATION
-  source(file = "./01b_leaflet_tab1.R", local = TRUE)
+  #source(file = "./01b_leaflet_tab1.R", local = TRUE)
   
   # OUTPUT DATA TABLE METEOROLOGICAL VARIABLE
-  source(file = "./01c_table_tab1.R", local = TRUE)
+  #source(file = "./01c_table_tab1.R", local = TRUE)
   # ----------------------------------------------------------------------------
   
   # OUTPUT TAB 2
@@ -355,31 +355,13 @@ server <- function(input, output, session) {
   # OUTPUT TIME SERIES ITH: NEW PRODUCT
   source(file = "./02c_timeseries_ith_new_tab2.R", local = TRUE)
   
-  # Capturar click en el mapa
-  #cds <- reactiveVal(NULL)
-  
-  #click <- eventReactive(input$leaflet_ith_click, {
-  #  click <- input$leaflet_ith_click
-  #  latlon <- c(lat = click$lat, lon = click$lng)
-  #  cds(latlon)
-  #  latlon
-  #})
-  
-  #data.leaf <- eventReactive(input$Calcular_ith, {
-  #  ffp <- file.for.points()
-  #  data <- load.netcdf.terra(nc.filenames = ffp[2], variable = "T2")
-  #  
-  #})
-  
-  #output$leaflet_ith <- renderLeaflet({
-  #  draw.map(x = data.leaf()[[4]]$x, y = data.leaf()[[4]]$y)
-  #})
+  source(file = "./02d_leaflet_map.R", local = TRUE)
   
   # ----------------------------------------------------------------------------
   
   # OUTPUT TAB 3
   # OUTPUT PROBABILITIES MAPS IMAGES & TIMESERIES ITH
-  source(file = "./03_map_timeseries_ith_tab3.R", local = TRUE)
+  #source(file = "./03_map_timeseries_ith_tab3.R", local = TRUE)
   # ----------------------------------------------------------------------------
 
 }

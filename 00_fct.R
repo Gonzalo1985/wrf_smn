@@ -144,15 +144,18 @@ find.nearest.point <- function(data.matrix = data.matrix,
 # se crea función draw.map para graficado de punto en mapa leaflet
 draw.map <- function(x = x, y = y){
   
-  if (length(x > 1) & length(y > 1))
-    {sv.x <- -60 ; sv.y <- -35 ; sv.zoom <- 3}
+  if (length(x) > 1 & length(y) > 1)
+    {sv.x <- -60 ; sv.y <- -35 ; sv.zoom <- 6}
   else
     {sv.x <- x[1] ; sv.y <- y[1] ; sv.zoom <- 8}
   
   df <- data.frame(lon = x, lat = y)
   df <- st_as_sf(df, coords = c("lon", "lat"), crs = 4326, agr = "constant")
+  df$popup <- paste0("Lon: ", st_coordinates(df)[, 1],
+                     "<br>Lat: ", st_coordinates(df)[, 2])
   
-  mapa <- leaflet(data = NULL, width = 1300, height = 1600, options = leafletOptions(preferCanvas = TRUE)) %>%
+  mapa <- leaflet(data = NULL, width = 1300, height = 1600,
+                  options = leafletOptions(preferCanvas = TRUE)) %>%
     
     addTiles(urlTemplate = "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png",
              attribution = "Servicio Meteorológico Nacional", group = "Argenmap IGN") %>%
@@ -163,7 +166,13 @@ draw.map <- function(x = x, y = y){
     addTiles(urlTemplate = "//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
              attribution = "Servicio Meteorológico Nacional", group = "OSM (default)") %>%
   
-    addCircles(data = df, weight = 5, group = "Punto de interés") %>%
+    addCircleMarkers(data = df,
+                     lng = st_coordinates(df)[, 1],
+                     lat = st_coordinates(df)[, 2],
+                     popup = ~popup,
+                     radius = 5,
+                     color = "#333333",
+                     fillColor = "#66c2a5", group = "Punto de interés") %>%
     
     addLayersControl(baseGroups = c("Argenmap IGN", "Argenmap Topo IGN", "OSM (default)"), 
                      overlayGroups = c("Punto de interés"), 

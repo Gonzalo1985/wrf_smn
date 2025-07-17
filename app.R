@@ -133,33 +133,33 @@ ui <- dashboardPage(skin = "green",
                
                box(title = "Mapas de ITH WRF-DET",
                    collapsible = TRUE, width = 6,
-                   imageOutput("image_ith"), height = "1000px"),
+                   imageOutput("image_ith"), height = "1200px"),
                box(title = "Series Temporales de ITH WRF-DET",
-                   collapsible = TRUE, width = 6, height = 500,
+                   collapsible = TRUE, width = 6, height = 100,
                    textOutput("plot_ith")),
                box(title = "Series Temporales de ITH WRF-DET: Nuevo producto (horas mayor a umbral)",
                    collapsible = TRUE, width = 6, height = 500,
                    imageOutput("plot_new_ith")),
-               box(title = "Mapas interactivo",
+               box(title = "Mapa interactivo (hacer click en punto y luego en 'Grafica Serie ITH-WRF-DET')",
                    collapsible = TRUE, width = 6,
-                   leafletOutput("leaflet_ith", height = "1000px"))
+                   leafletOutput("leaflet_ith", height = "800px"))
                ),
-      #tabPanel("Productos ITH WRF-ENS (desactualizado)", value = 2,
-      #         fluidRow(
-      #           column(width=3, tags$a(
-      #           href = "https://repositorio.smn.gob.ar/bitstream/handle/20.500.12160/2875/Nota_Tecnica_SMN_2024-182.pdf?sequence=1&isAllowed=y",
-      #           target = "_blank",
-      #           infoBox("Documentación", "Haga click aquí", icon = icon("book"), width = "100%"))),
+      tabPanel("Productos ITH WRF-ENS (desactualizado)", value = 2,
+               fluidRow(
+                 column(width=3, tags$a(
+                 href = "https://repositorio.smn.gob.ar/bitstream/handle/20.500.12160/2875/Nota_Tecnica_SMN_2024-182.pdf?sequence=1&isAllowed=y",
+                 target = "_blank",
+                 infoBox("Documentación", "Haga click aquí", icon = icon("book"), width = "100%"))),
               
-      #           column(width=3, infoBox("", "Consultas", "gdiaz@smn.gob.ar", width = "100%", icon = icon("question")))),
+                 column(width=3, infoBox("", "Consultas", "gdiaz@smn.gob.ar", width = "100%", icon = icon("question")))),
                
-      #         box(title = "Mapas de probabilidad de ITH WRF-ENS",
-      #             collapsible = TRUE, width = 10, height = 500,
-      #             imageOutput("image_ith_ens")),
-      #         box(title = "Series Temporales de ITH WRF-ENS",
-      #             collapsible = TRUE, width = 6, height = 800,
-      #             imageOutput("plot_ith_ens"))
-      #)
+               box(title = "Mapas de probabilidad de ITH WRF-ENS",
+                   collapsible = TRUE, width = 10, height = 500,
+                   imageOutput("image_ith_ens")),
+               box(title = "Series Temporales de ITH WRF-ENS",
+                   collapsible = TRUE, width = 6, height = 800,
+                   imageOutput("plot_ith_ens"))
+      )
       )
     )
     )
@@ -361,7 +361,7 @@ server <- function(input, output, session) {
   
   # OUTPUT TAB 3
   # OUTPUT PROBABILITIES MAPS IMAGES & TIMESERIES ITH
-  #source(file = "./03_map_timeseries_ith_tab3.R", local = TRUE)
+  source(file = "./03_map_timeseries_ith_tab3.R", local = TRUE)
   # ----------------------------------------------------------------------------
 
 }

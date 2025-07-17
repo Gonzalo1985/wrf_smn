@@ -6,7 +6,7 @@ output$image_ith_ens <- renderImage({
 }, deleteFile = FALSE)
 
 output$plot_ith_ens <- renderImage({
-  filename <-  normalizePath(file.path("./www/serieITH_Sunchales.png"))
+  filename <-  normalizePath(file.path("./www/serieITH_Parana.png"))
   
   list(src = filename, alt = paste0("Image number ", input$n))
   

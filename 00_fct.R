@@ -145,7 +145,7 @@ find.nearest.point <- function(data.matrix = data.matrix,
 draw.map <- function(x = x, y = y){
   
   if (length(x) > 1 & length(y) > 1)
-    {sv.x <- -60 ; sv.y <- -35 ; sv.zoom <- 6}
+    {sv.x <- -60 ; sv.y <- -35 ; sv.zoom <- 10}
   else
     {sv.x <- x[1] ; sv.y <- y[1] ; sv.zoom <- 8}
   
@@ -169,10 +169,13 @@ draw.map <- function(x = x, y = y){
     addCircleMarkers(data = df,
                      lng = st_coordinates(df)[, 1],
                      lat = st_coordinates(df)[, 2],
-                     popup = ~popup,
+                     opacity = 0.2,
+                     label = ~popup,
                      radius = 5,
                      color = "#333333",
-                     fillColor = "#66c2a5", group = "Punto de interés") %>%
+                     fillColor = "#66c2a5",
+                     fillOpacity = 0.2,
+                     group = "Punto de interés") %>%
     
     addLayersControl(baseGroups = c("Argenmap IGN", "Argenmap Topo IGN", "OSM (default)"), 
                      overlayGroups = c("Punto de interés"), 

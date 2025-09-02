@@ -266,14 +266,14 @@ server <- function(input, output, session) {
     showNotification("La descarga de archivos se encuentra en proceso", duration = 7)
        
     s <- get.wrf.files(anual = format(input$fecha, "%Y"),
-                  mes =format(input$fecha, "%m"),
+                  mes = format(input$fecha, "%m"),
                   dia = format(input$fecha, "%d"),
-                  ciclo = input$ciclo,
-                  time = input$time)
+                  ciclo = as.character(input$ciclo),
+                  time = as.character(input$time))
        
     showNotification("¡Listo!", duration = NULL)
     
-    file.for.points(substr(s$Key, 28, 58))
+    file.for.points(substr(s, 28, 58))
   })
   
   

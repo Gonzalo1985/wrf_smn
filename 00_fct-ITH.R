@@ -113,12 +113,16 @@ ith.new.product <- function(ith = ith, station = station, cds = cds){
                                        right = FALSE)
   
   
+  manual.colors <- c("#1ABC9C", "#FEF65B", "#FF9932", "#FF5733")
+  
   if (length(which(serie.ITH$category == "#1ABC9C")) == 0)
-    
-    {manual.colors <- c( "#FEF65B", "#FF9932", "#FF5733")} else
-    
-          {manual.colors <- c("#1ABC9C", "#FEF65B", "#FF9932", "#FF5733")}
+    {manual.colors <- c( "#FEF65B", "#FF9932", "#FF5733")}
  
+  if (length(which(serie.ITH$category == "#1ABC9C")) == 0 & 
+      length(which(serie.ITH$category == "#FEF65B")) == 0)
+    {manual.colors <- c("#FF9932", "#FF5733")}
+  
+  
   
   p <- ggplot() +
     

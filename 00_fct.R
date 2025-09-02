@@ -16,26 +16,37 @@ wrf.download <- function(wrf.name = wrf.name){
 
 # función que obtiene las corridas del WRF de AWS (utiliza función wrf.download)
 get.wrf.files <- function(anual = anual, mes = mes, dia = dia, ciclo = ciclo, time = time){
+  
+  #wrf.names <- get_bucket_df(
+  #  bucket = "s3://smn-ar-wrf/",
+  #  prefix = paste0("DATA/WRF/DET/", anual, "/", mes, "/", dia, "/", ciclo),
+  #  max = Inf,
+  #  region = "us-west-2")
+  
   # nombres de los archivos del Bucket a descargar
-  wrf.names <- get_bucket_df(
-    bucket = "s3://smn-ar-wrf/",
-    prefix = paste0("DATA/WRF/DET/", anual, "/", mes, "/", dia, "/", ciclo),
-    max = Inf,
-    region = "us-west-2")
+  resp <- get_bucket(bucket = "smn-ar-wrf",
+                     prefix = paste0("DATA/WRF/DET/", anual, "/", mes, "/", dia,
+                                     "/", ciclo),
+                     max = Inf,
+                     region = "us-west-2")
+  
+  wrf.names <- sapply(resp, function(x) x[["Key"]])
+  wrf.names.rows <- which(grepl(time, wrf.names, fixed = TRUE) == TRUE)
+  wrf.names <- wrf.names[wrf.names.rows]
   
   # se queda solo con el intervalo indicado 01H o 24H
-  wrf.names.rows <- which(grepl(time, wrf.names$Key, fixed = TRUE) == TRUE)
-  wrf.names <- wrf.names[wrf.names.rows, ]
+  #wrf.names.rows <- which(grepl(time, wrf.names$Key, fixed = TRUE) == TRUE)
+  #wrf.names <- wrf.names[wrf.names.rows, ]
   
   # ejecución de la función wrf.download
   #lapply(wrf.names$Key, FUN = wrf.download)
   withProgress(message = 'Descargando datos...', detail = "Comienzo", value = 0, {
     
-    for (i in 1:length(wrf.names$Key))
+    for (i in 1:length(wrf.names))
       {
-       wrf.download(wrf.names$Key[i])
-       incProgress(1/length(wrf.names$Key),
-                   detail = paste("archivo", i, "de", length(wrf.names$Key)))
+       wrf.download(wrf.names[i])
+       incProgress(1/length(wrf.names),
+                   detail = paste("archivo", i, "de", length(wrf.names)))
       }
   })
   return(wrf.names)
